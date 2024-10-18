@@ -29,7 +29,7 @@ frame-system-benchmarking = { workspace = true, default-features = false, option
 frame-system-rpc-runtime-api = { workspace = true, default-features = false }
 hex-literal = { workspace = true, default-features = false, optional = true  }
 pallet-aura = { workspace = true, default-features = false }
-pallet-balances = { workspace = true, default-features = false }
+pallet-balances = { workspace = true, default-features = false, features = ["insecure_zero_ed"] }
 pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
 pallet-sudo = { workspace = true, default-features = false }
 pallet-timestamp = { workspace = true, default-features = false }
