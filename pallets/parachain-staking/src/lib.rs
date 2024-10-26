@@ -169,8 +169,11 @@ pub mod pallet {
 		pallet_prelude::*,
 		storage::bounded_btree_map::BoundedBTreeMap,
 		traits::{
-			Currency, EstimateNextSessionRotation, ExistenceRequirement::KeepAlive, Get,
-			LockIdentifier, LockableCurrency, ReservableCurrency, StorageVersion, WithdrawReasons,
+			tokens::{fungible::Inspect, Fortitude, Preservation},
+			Currency, EstimateNextSessionRotation,
+			ExistenceRequirement::KeepAlive,
+			Get, LockIdentifier, LockableCurrency, ReservableCurrency, StorageVersion,
+			WithdrawReasons,
 		},
 		BoundedVec, PalletId,
 	};
@@ -180,8 +183,8 @@ pub mod pallet {
 	use scale_info::TypeInfo;
 	use sp_runtime::{
 		traits::{
-			AccountIdConversion, CheckedAdd, CheckedMul, CheckedSub, Convert, One,
-			SaturatedConversion, Saturating, StaticLookup, Zero,
+			AccountIdConversion, CheckedAdd, CheckedMul, Convert, One, SaturatedConversion,
+			Saturating, StaticLookup, Zero,
 		},
 		Permill,
 	};
@@ -225,6 +228,7 @@ pub mod pallet {
 		type Currency: Currency<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ ReservableCurrency<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ LockableCurrency<Self::AccountId, Balance = Self::CurrencyBalance>
+			+ Inspect<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ Eq;
 
 		/// Just the `Currency::Balance` type; we have this item to allow us to
@@ -2632,23 +2636,27 @@ pub mod pallet {
 
 			if let Some(state) = CandidatePool::<T>::get(author) {
 				let pot = Self::account_id();
-				let issue_number = T::Currency::free_balance(&pot)
-					.checked_sub(&T::Currency::minimum_balance())
-					.unwrap_or_else(Zero::zero);
-
-				let (now_read, now_write, now_reward) =
-					<T::BlockRewardCalculator as CollatorDelegatorBlockRewardCalculator<T>>::collator_reward_per_block(&state, issue_number);
-				Self::do_reward(&pot, &now_reward.owner, now_reward.amount);
-				reads = reads.saturating_add(now_read);
-				writes = writes.saturating_add(now_write);
+				let issue_number =
+					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite);
 
 				let (now_read, now_write, now_rewards) =
 					<T::BlockRewardCalculator as CollatorDelegatorBlockRewardCalculator<T>>::delegator_reward_per_block(&state, issue_number);
-				now_rewards.into_iter().for_each(|x| {
+				now_rewards.iter().for_each(|x| {
 					Self::do_reward(&pot, &x.owner, x.amount);
 				});
 				reads = reads.saturating_add(now_read);
 				writes = writes.saturating_add(now_write);
+
+				let total_collator_reward = if state.delegators.is_empty() {
+					issue_number
+				} else {
+					let total_delegator_reward = now_rewards
+						.iter()
+						.fold(BalanceOf::<T>::zero(), |acc, x| acc.saturating_add(x.amount));
+					issue_number.saturating_sub(total_delegator_reward)
+				};
+
+				Self::do_reward(&pot, &state.id, total_collator_reward);
 			}
 
 			frame_system::Pallet::<T>::register_extra_weight_unchecked(
