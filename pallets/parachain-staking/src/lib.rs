@@ -2639,9 +2639,9 @@ pub mod pallet {
 				let ed = <T::Currency as frame_support::traits::fungible::Inspect<T::AccountId>>::minimum_balance();
 				let issue_number = if ed == T::CurrencyBalance::from(0 as u32) {
 					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
-					// Avoid the pot complaint no balance there
-					.checked_sub(&T::CurrencyBalance::from(10 as u32))
-					.unwrap_or_else(Zero::zero)
+						// Avoid the pot complaint no balance there
+						.checked_sub(&T::CurrencyBalance::from(10 as u32))
+						.unwrap_or_else(Zero::zero)
 				} else {
 					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
 				};
