@@ -24,6 +24,7 @@ rlp = { workspace = true, default-features = false, optional = true  }
 sha3 = { workspace = true, default-features = false, optional = true  }
 frame-benchmarking = { workspace = true, default-features = false, optional = true  }
 frame-executive = { workspace = true, default-features = false }
+frame-metadata-hash-extension = { workspace = true }
 frame-system = { workspace = true, default-features = false }
 frame-system-benchmarking = { workspace = true, default-features = false, optional = true }
 frame-system-rpc-runtime-api = { workspace = true, default-features = false }
@@ -188,6 +189,7 @@ std = [
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"frame-executive/std",
+	"frame-metadata-hash-extension/std",
 	"frame-support/std",
 	"frame-system-rpc-runtime-api/std",
 	"frame-system/std",
@@ -370,3 +372,10 @@ try-runtime = [
 
 	"zenlink-protocol/try-runtime",
 ]
+
+# Enable metadata hash generation at compile time for the `CheckMetadataHash` extension.
+metadata-hash = ["substrate-wasm-builder/metadata-hash"]
+
+# A feature that should be enabled when the runtime should be built for on-chain
+# deployment. This will disable stuff that shouldn't be part of the on-chain wasm
+on-chain-release-build = ["metadata-hash"]

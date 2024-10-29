@@ -1,10 +1,16 @@
-FROM docker.io/paritytech/ci-linux:production as builder
+FROM --platform=linux/arm64 arm64v8/rust:1.79.0-bookworm as builder
+
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive \
+    apt-get install --no-install-recommends --assume-yes \
+      protobuf-compiler \
+ && apt-get install --assume-yes libclang-dev
 
 WORKDIR /node
 COPY . .
 RUN cargo build --release --features on-chain-release-build
 
-FROM docker.io/library/ubuntu:22.04
+FROM --platform=linux/arm64 docker.io/library/ubuntu:22.04
 
 # Copy the node binary from builder stage.
 COPY --from=builder /node/target/release/peaq-node /usr/local/bin
