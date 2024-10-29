@@ -2145,8 +2145,8 @@ impl pallet_vesting::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AssetDeposit: Balance = ExistentialDeposit::get();
-	pub const AssetExistentialDeposit: Balance = ExistentialDeposit::get();
+	pub const AssetDeposit: Balance = 20 * CENTS;
+	pub const AssetApprovalDeposit: Balance = 20 * MILLICENTS;
 	pub const AssetsStringLimit: u32 = 50;
 	/// Key = 32 bytes, Value = 36 bytes (32+1+1+1+1)
 	// https://github.com/paritytech/substrate/blob/069917b/frame/assets/src/lib.rs#L257L271
@@ -2166,7 +2166,7 @@ impl pallet_assets::Config for Runtime {
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
 	type AssetAccountDeposit = AssetAccountDeposit;
-	type ApprovalDeposit = AssetExistentialDeposit;
+	type ApprovalDeposit = AssetApprovalDeposit;
 	type StringLimit = AssetsStringLimit;
 	type Freezer = ();
 	type Extra = ();
