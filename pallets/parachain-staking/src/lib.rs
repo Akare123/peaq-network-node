@@ -183,8 +183,8 @@ pub mod pallet {
 	use scale_info::TypeInfo;
 	use sp_runtime::{
 		traits::{
-			AccountIdConversion, CheckedAdd, CheckedMul, Convert, One, SaturatedConversion,
-			Saturating, StaticLookup, Zero,
+			AccountIdConversion, CheckedAdd, CheckedMul, CheckedSub, Convert, One,
+			SaturatedConversion, Saturating, StaticLookup, Zero,
 		},
 		Permill,
 	};
@@ -2636,8 +2636,15 @@ pub mod pallet {
 
 			if let Some(state) = CandidatePool::<T>::get(author) {
 				let pot = Self::account_id();
-				let issue_number =
-					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite);
+				let ed = <T::Currency as frame_support::traits::fungible::Inspect<T::AccountId>>::minimum_balance();
+				let issue_number = if ed == T::CurrencyBalance::from(0_u32) {
+					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
+						// Avoid the pot complaint no balance there
+						.checked_sub(&T::CurrencyBalance::from(10_u32))
+						.unwrap_or_else(Zero::zero)
+				} else {
+					T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
+				};
 
 				let (now_read, now_write, now_rewards) =
 					<T::BlockRewardCalculator as CollatorDelegatorBlockRewardCalculator<T>>::delegator_reward_per_block(&state, issue_number);
