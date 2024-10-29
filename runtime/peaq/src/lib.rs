@@ -547,7 +547,7 @@ impl pallet_sudo::Config for Runtime {
 }
 
 parameter_types! {
-	pub const DidStorageDepositBase: Balance = DOLLARS / 10;
+	pub const DidStorageDepositBase: Balance = MILLICENTS * 5;
 	pub const DidStorageDepositPerByte: Balance = 0;
 }
 
@@ -1032,15 +1032,25 @@ parameter_types! {
 	pub PeaqDepinIncentivisationAccount: AccountId = PotDepinIncentivisationId::get().into_account_truncating();
 }
 
+parameter_types! {
+	pub const RBACStorageDepositBase: Balance = MILLICENTS * 5;
+	pub const RBACStorageDepositPerByte: Balance = 0;
+}
+
 impl peaq_pallet_rbac::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type EntityId = RbacEntityId;
 	type BoundedDataLen = ConstU32<262144>;
 	type WeightInfo = peaq_pallet_rbac::weights::WeightInfo<Runtime>;
 	type Currency = Balances;
-	type StorageDepositBase = StorageDepositBase;
-	type StorageDepositPerByte = StorageDepositPerByte;
+	type StorageDepositBase = RBACStorageDepositBase;
+	type StorageDepositPerByte = RBACStorageDepositPerByte;
 	type ReserveIdentifier = RBACReserveIdentifier;
+}
+
+parameter_types! {
+	pub const StorageStorageDepositBase: Balance = MILLICENTS * 5;
+	pub const StorageStorageDepositPerByte: Balance = 0;
 }
 
 // Config the storage in pallets/storage
@@ -1049,8 +1059,8 @@ impl peaq_pallet_storage::Config for Runtime {
 	type WeightInfo = peaq_pallet_storage::weights::WeightInfo<Runtime>;
 	type BoundedDataLen = ConstU32<256>;
 	type Currency = Balances;
-	type StorageDepositBase = StorageDepositBase;
-	type StorageDepositPerByte = StorageDepositPerByte;
+	type StorageDepositBase = StorageStorageDepositBase;
+	type StorageDepositPerByte = StorageStorageDepositPerByte;
 	type ReserveIdentifier = StorageReserveIdentifier;
 }
 
