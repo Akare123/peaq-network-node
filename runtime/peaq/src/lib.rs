@@ -451,7 +451,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ExistentialDeposit: u128 = DOLLARS;
+	pub const ExistentialDeposit: u128 = 0;
 	pub const MaxLocks: u32 = 50;
 	pub const MaxReserves: u32 = 50;
 	pub const DIDReserveIdentifier: [u8; 8] = [b'p', b'e', b'a', b'q', b'_', b'd', b'i', b'd'];
@@ -547,7 +547,7 @@ impl pallet_sudo::Config for Runtime {
 }
 
 parameter_types! {
-	pub const DidStorageDepositBase: Balance = DOLLARS / 10;
+	pub const DidStorageDepositBase: Balance = MILLICENTS * 500;
 	pub const DidStorageDepositPerByte: Balance = 0;
 }
 
@@ -836,9 +836,9 @@ pub mod staking {
 			/// Maximum number of delegators per collator at launch
 			#[derive(Debug, PartialEq, Eq)]
 			pub const MaxDelegatorsPerCollator: u32 = 32;
-			/// Maximum 1 collator per delegator at launch, will be increased later
+			/// Maximum 8 collators per delegator at launch, will be increased later
 			#[derive(Debug, PartialEq, Eq)]
-			pub const MaxCollatorsPerDelegator: u32 = 1;
+			pub const MaxCollatorsPerDelegator: u32 = 8;
 			/// Minimum stake required to be reserved to be a collator is 50_000 * DOLLARS
 			pub const MinCollatorStake: Balance = 50_000 * DOLLARS;
 			/// Minimum stake required to be reserved to be a delegator is 100 * DOLLARS
@@ -974,15 +974,25 @@ parameter_types! {
 	pub PeaqDepinIncentivisationAccount: AccountId = PotDepinIncentivisationId::get().into_account_truncating();
 }
 
+parameter_types! {
+	pub const RBACStorageDepositBase: Balance = MILLICENTS * 500;
+	pub const RBACStorageDepositPerByte: Balance = 0;
+}
+
 impl peaq_pallet_rbac::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type EntityId = RbacEntityId;
 	type BoundedDataLen = ConstU32<262144>;
 	type WeightInfo = peaq_pallet_rbac::weights::WeightInfo<Runtime>;
 	type Currency = Balances;
-	type StorageDepositBase = StorageDepositBase;
-	type StorageDepositPerByte = StorageDepositPerByte;
+	type StorageDepositBase = RBACStorageDepositBase;
+	type StorageDepositPerByte = RBACStorageDepositPerByte;
 	type ReserveIdentifier = RBACReserveIdentifier;
+}
+
+parameter_types! {
+	pub const StorageStorageDepositBase: Balance = MILLICENTS * 500;
+	pub const StorageStorageDepositPerByte: Balance = 0;
 }
 
 // Config the storage in pallets/storage
@@ -991,8 +1001,8 @@ impl peaq_pallet_storage::Config for Runtime {
 	type WeightInfo = peaq_pallet_storage::weights::WeightInfo<Runtime>;
 	type BoundedDataLen = ConstU32<256>;
 	type Currency = Balances;
-	type StorageDepositBase = StorageDepositBase;
-	type StorageDepositPerByte = StorageDepositPerByte;
+	type StorageDepositBase = StorageStorageDepositBase;
+	type StorageDepositPerByte = StorageStorageDepositPerByte;
 	type ReserveIdentifier = StorageReserveIdentifier;
 }
 

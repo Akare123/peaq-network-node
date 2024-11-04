@@ -431,7 +431,7 @@ impl pallet_timestamp::Config for Runtime {
 }
 
 parameter_types! {
-	pub const ExistentialDeposit: u128 = 500;
+	pub const ExistentialDeposit: u128 = 0;
 	pub const MaxLocks: u32 = 50;
 	pub const MaxReserves: u32 = 50;
 	pub const DIDReserveIdentifier: [u8; 8] = [b'p', b'e', b'a', b'q', b'_', b'd', b'i', b'd'];
@@ -819,10 +819,10 @@ pub mod staking {
 			/// Maximum 25 delegators per collator at launch, might be increased later
 			#[derive(Debug, PartialEq, Eq)]
 			pub const MaxDelegatorsPerCollator: u32 = 25;
-			/// Maximum 1 collator per delegator at launch, will be increased later
+			/// Maximum 8 collators per delegator at launch, will be increased later
 			#[derive(Debug, PartialEq, Eq)]
-			pub const MaxCollatorsPerDelegator: u32 = 1;
-			/// Minimum stake required to be reserved to be a collator is 32000
+			pub const MaxCollatorsPerDelegator: u32 = 8;
+			/// Minimum stake required to be reserved to be a collator is 32_000
 			pub const MinCollatorStake: Balance = 32_000;
 			/// Minimum stake required to be reserved to be a delegator is 20000
 			pub const MinDelegatorStake: Balance = 20_000;
@@ -2111,8 +2111,8 @@ impl pallet_vesting::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AssetDeposit: Balance = ExistentialDeposit::get();
-	pub const AssetExistentialDeposit: Balance = ExistentialDeposit::get();
+	pub const AssetDeposit: Balance = 20 * CENTS;
+	pub const AssetApprovalDeposit: Balance = 20 * MILLICENTS;
 	pub const AssetsStringLimit: u32 = 50;
 	/// Key = 32 bytes, Value = 36 bytes (32+1+1+1+1)
 	// https://github.com/paritytech/substrate/blob/069917b/frame/assets/src/lib.rs#L257L271
@@ -2132,7 +2132,7 @@ impl pallet_assets::Config for Runtime {
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
 	type AssetAccountDeposit = AssetAccountDeposit;
-	type ApprovalDeposit = AssetExistentialDeposit;
+	type ApprovalDeposit = AssetApprovalDeposit;
 	type StringLimit = AssetsStringLimit;
 	type Freezer = ();
 	type Extra = ();
