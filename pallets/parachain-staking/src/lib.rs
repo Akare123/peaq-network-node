@@ -167,8 +167,11 @@ pub mod pallet {
 		pallet_prelude::*,
 		storage::bounded_btree_map::BoundedBTreeMap,
 		traits::{
-			Currency, EstimateNextSessionRotation, ExistenceRequirement::KeepAlive, Get,
-			LockIdentifier, LockableCurrency, ReservableCurrency, StorageVersion, WithdrawReasons,
+			tokens::{fungible::Inspect, Fortitude, Preservation},
+			Currency, EstimateNextSessionRotation,
+			ExistenceRequirement::KeepAlive,
+			Get, LockIdentifier, LockableCurrency, ReservableCurrency, StorageVersion,
+			WithdrawReasons,
 		},
 		BoundedVec, PalletId,
 	};
@@ -223,6 +226,7 @@ pub mod pallet {
 		type Currency: Currency<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ ReservableCurrency<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ LockableCurrency<Self::AccountId, Balance = Self::CurrencyBalance>
+			+ Inspect<Self::AccountId, Balance = Self::CurrencyBalance>
 			+ Eq;
 
 		/// Just the `Currency::Balance` type; we have this item to allow us to
@@ -2775,9 +2779,15 @@ pub mod pallet {
 			let mut writes = Weight::from_parts(0, 1);
 
 			let pot = Self::account_id();
-			let issue_number = T::Currency::free_balance(&pot)
-				.checked_sub(&T::Currency::minimum_balance())
-				.unwrap_or_else(Zero::zero);
+			let ed = <T::Currency as frame_support::traits::fungible::Inspect<T::AccountId>>::minimum_balance();
+			let issue_number = if ed == T::CurrencyBalance::from(0_u32) {
+				T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
+					// Avoid the pot complaint no balance there
+					.checked_sub(&T::CurrencyBalance::from(10_u32))
+					.unwrap_or_else(Zero::zero)
+			} else {
+				T::Currency::reducible_balance(&pot, Preservation::Preserve, Fortitude::Polite)
+			};
 
 			let (in_reads, total_staking_in_session) = Self::get_total_collator_staking_num();
 			reads.saturating_add(in_reads);
