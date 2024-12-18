@@ -109,9 +109,7 @@ where
 			.collect::<Vec<CollatorInfo>>();
 		let validators = pallet_session::Pallet::<Runtime>::validators()
 			.into_iter()
-			.map(|info| {
-				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(info))
-			})
+			.map(|info| H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(info)))
 			.collect::<Vec<H256>>();
 		let candidate_list = all_collators.into_iter().filter(|x| !validators.contains(&x.owner));
 		Ok(candidate_list.collect::<Vec<CollatorInfo>>())
