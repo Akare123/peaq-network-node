@@ -75,22 +75,19 @@ where
 		handle.record_db_read::<Runtime>(7200)?;
 
 		let all_collators = parachain_staking::CandidatePool::<Runtime>::iter()
-			.map(|(_id, stake_info)| {
-				CollatorInfo {
-					owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
-					amount: stake_info.stake.into(),
-					commission: U256::from(stake_info.commission.deconstruct() as u128),
-				}
-			}).collect::<Vec<CollatorInfo>>();
+			.map(|(_id, stake_info)| CollatorInfo {
+				owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
+				amount: stake_info.stake.into(),
+				commission: U256::from(stake_info.commission.deconstruct() as u128),
+			})
+			.collect::<Vec<CollatorInfo>>();
 		let top_candiate = parachain_staking::Pallet::<Runtime>::top_candidates()
 			.into_iter()
 			.map(|stake_info| {
 				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.owner))
 			})
 			.collect::<Vec<H256>>();
-		let candidate_list = all_collators
-			.into_iter()
-			.filter(|x| top_candiate.contains(&x.owner));
+		let candidate_list = all_collators.into_iter().filter(|x| top_candiate.contains(&x.owner));
 		Ok(candidate_list.collect::<Vec<CollatorInfo>>())
 	}
 
@@ -104,22 +101,19 @@ where
 		handle.record_db_read::<Runtime>(7200)?;
 
 		let all_collators = parachain_staking::CandidatePool::<Runtime>::iter()
-			.map(|(_id, stake_info)| {
-				CollatorInfo {
-					owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
-					amount: stake_info.stake.into(),
-					commission: U256::from(stake_info.commission.deconstruct() as u128),
-				}
-			}).collect::<Vec<CollatorInfo>>();
+			.map(|(_id, stake_info)| CollatorInfo {
+				owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
+				amount: stake_info.stake.into(),
+				commission: U256::from(stake_info.commission.deconstruct() as u128),
+			})
+			.collect::<Vec<CollatorInfo>>();
 		let top_candiate = parachain_staking::Pallet::<Runtime>::top_candidates()
 			.into_iter()
 			.map(|stake_info| {
 				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.owner))
 			})
 			.collect::<Vec<H256>>();
-		let candidate_list = all_collators
-			.into_iter()
-			.filter(|x| !top_candiate.contains(&x.owner));
+		let candidate_list = all_collators.into_iter().filter(|x| !top_candiate.contains(&x.owner));
 		Ok(candidate_list.collect::<Vec<CollatorInfo>>())
 	}
 
