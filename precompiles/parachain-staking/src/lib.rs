@@ -112,6 +112,7 @@ where
 			.map(|stake_info| {
 				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.owner))
 			})
+			.take(parachain_staking::MaxSelectedCandidates::<Runtime>::get() as usize)
 			.collect::<Vec<H256>>();
 		let candidate_list = all_collators.into_iter().filter(|x| !top_candiate.contains(&x.owner));
 		Ok(candidate_list.collect::<Vec<CollatorInfo>>())

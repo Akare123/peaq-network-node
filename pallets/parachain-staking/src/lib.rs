@@ -540,9 +540,10 @@ pub mod pallet {
 	}
 
 	/// The maximum number of collator candidates selected at each round.
+	/// precompiles will call this
 	#[pallet::storage]
 	#[pallet::getter(fn max_selected_candidates)]
-	pub(crate) type MaxSelectedCandidates<T: Config> = StorageValue<_, u32, ValueQuery>;
+	pub type MaxSelectedCandidates<T: Config> = StorageValue<_, u32, ValueQuery>;
 
 	/// Current round number and next round scheduled transition.
 	#[pallet::storage]
