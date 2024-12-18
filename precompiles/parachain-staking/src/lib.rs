@@ -56,7 +56,7 @@ pub struct CollatorInfo {
 #[precompile_utils::precompile]
 impl<Runtime> ParachainStakingPrecompile<Runtime>
 where
-	Runtime: parachain_staking::Config + pallet_evm::Config,
+	Runtime: parachain_staking::Config + pallet_evm::Config + pallet_session::Config,
 	Runtime::RuntimeCall: Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo,
 	<Runtime::RuntimeCall as Dispatchable>::RuntimeOrigin: From<Option<Runtime::AccountId>>,
 	Runtime::RuntimeCall: From<parachain_staking::Call<Runtime>>,
@@ -77,7 +77,7 @@ where
 		let all_collators = parachain_staking::CandidatePool::<Runtime>::iter()
 			.map(|(_id, stake_info)| CollatorInfo {
 				owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
-				amount: stake_info.stake.into(),
+				amount: stake_info.total.into(),
 				commission: U256::from(stake_info.commission.deconstruct() as u128),
 			})
 			.collect::<Vec<CollatorInfo>>();
@@ -103,18 +103,17 @@ where
 		let all_collators = parachain_staking::CandidatePool::<Runtime>::iter()
 			.map(|(_id, stake_info)| CollatorInfo {
 				owner: H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.id)),
-				amount: stake_info.stake.into(),
+				amount: stake_info.total.into(),
 				commission: U256::from(stake_info.commission.deconstruct() as u128),
 			})
 			.collect::<Vec<CollatorInfo>>();
-		let top_candiate = parachain_staking::Pallet::<Runtime>::top_candidates()
+		let validators = pallet_session::Pallet::<Runtime>::validators()
 			.into_iter()
-			.map(|stake_info| {
-				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(stake_info.owner))
+			.map(|info| {
+				H256::from(<AccountIdOf<Runtime> as Into<[u8; 32]>>::into(info))
 			})
-			.take(parachain_staking::MaxSelectedCandidates::<Runtime>::get() as usize)
 			.collect::<Vec<H256>>();
-		let candidate_list = all_collators.into_iter().filter(|x| !top_candiate.contains(&x.owner));
+		let candidate_list = all_collators.into_iter().filter(|x| !validators.contains(&x.owner));
 		Ok(candidate_list.collect::<Vec<CollatorInfo>>())
 	}
 
