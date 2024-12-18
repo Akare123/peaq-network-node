@@ -576,9 +576,10 @@ pub mod pallet {
 	///
 	/// It maps from an account to its information.
 	/// Moreover, it counts the number of candidates.
+	/// Precompiles will call this structure to list all
 	#[pallet::storage]
 	#[pallet::getter(fn candidate_pool)]
-	pub(crate) type CandidatePool<T: Config> = CountedStorageMap<
+	pub type CandidatePool<T: Config> = CountedStorageMap<
 		_,
 		Twox64Concat,
 		T::AccountId,
