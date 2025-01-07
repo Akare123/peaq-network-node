@@ -23,8 +23,10 @@ use crate::{
 	cli::{Cli, RelayChainCli, Subcommand},
 	cli_opt::{EthApi, RpcConfig},
 	parachain,
-	parachain::service::{self, dev, frontier_database_dir, krest, peaq, start_node},
-	parachain::ExtHostFunctions,
+	parachain::{
+		service::{self, dev, frontier_database_dir, krest, peaq, start_node},
+		ExtHostFunctions,
+	},
 };
 
 trait IdentifyChain {

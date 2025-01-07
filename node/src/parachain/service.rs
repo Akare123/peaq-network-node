@@ -66,16 +66,10 @@ pub type ExtHostFunctions = (
 	peaq_primitives_ext::peaq_ext::HostFunctions,
 );
 #[cfg(not(feature = "runtime-benchmarks"))]
-pub type ExtHostFunctions = (
-	sp_io::SubstrateHostFunctions,
-	peaq_primitives_ext::peaq_ext::HostFunctions,
-);
+pub type ExtHostFunctions =
+	(sp_io::SubstrateHostFunctions, peaq_primitives_ext::peaq_ext::HostFunctions);
 
-type FullClient<RuntimeApi> = TFullClient<
-	Block,
-	RuntimeApi,
-	WasmExecutor<ExtHostFunctions>,
->;
+type FullClient<RuntimeApi> = TFullClient<Block, RuntimeApi, WasmExecutor<ExtHostFunctions>>;
 type FullBackend = TFullBackend<Block>;
 
 pub fn frontier_database_dir(config: &Configuration, path: &str) -> std::path::PathBuf {
