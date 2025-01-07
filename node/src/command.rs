@@ -23,10 +23,7 @@ use crate::{
 	cli::{Cli, RelayChainCli, Subcommand},
 	cli_opt::{EthApi, RpcConfig},
 	parachain,
-	parachain::{
-		service::{self, dev, frontier_database_dir, krest, peaq, start_node},
-		ExtHostFunctions,
-	},
+	parachain::service::{self, dev, frontier_database_dir, krest, peaq, start_node},
 };
 
 trait IdentifyChain {
@@ -323,7 +320,9 @@ pub fn run() -> sc_cli::Result<()> {
 				match cmd {
 					BenchmarkCmd::Pallet(cmd) => {
 						with_runtime_or_err!(chain_spec, {
-							runner.sync_run(|config| cmd.run::<Block, ExtHostFunctions>(config))
+							runner.sync_run(|config| {
+								cmd.run::<Block, parachain::ExtHostFunctions>(config)
+							})
 						})
 					},
 					BenchmarkCmd::Block(cmd) => {

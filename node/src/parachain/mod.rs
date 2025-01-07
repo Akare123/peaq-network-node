@@ -14,7 +14,9 @@ pub mod dev_chain_spec;
 pub mod krest_chain_spec;
 pub mod peaq_chain_spec;
 
-pub use service::{build_import_queue, ExtHostFunctions};
+pub use service::build_import_queue;
+#[cfg(feature = "runtime-benchmarks")]
+pub use service::ExtHostFunctions;
 
 /// Node `ChainSpec` extensions.
 ///
