@@ -24,6 +24,7 @@ use crate::{
 	cli_opt::{EthApi, RpcConfig},
 	parachain,
 	parachain::service::{self, dev, frontier_database_dir, krest, peaq, start_node},
+	parachain::ExtHostFunctions,
 };
 
 trait IdentifyChain {
@@ -320,7 +321,7 @@ pub fn run() -> sc_cli::Result<()> {
 				match cmd {
 					BenchmarkCmd::Pallet(cmd) => {
 						with_runtime_or_err!(chain_spec, {
-							runner.sync_run(|config| cmd.run::<Block>(config))
+							runner.sync_run(|config| cmd.run::<Block, ExtHostFunctions>(config))
 						})
 					},
 					BenchmarkCmd::Block(cmd) => {

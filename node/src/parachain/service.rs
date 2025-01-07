@@ -59,14 +59,22 @@ declare_executor!(dev, peaq_dev_runtime);
 declare_executor!(krest, peaq_krest_runtime);
 declare_executor!(peaq, peaq_runtime);
 
+#[cfg(feature = "runtime-benchmarks")]
+pub type ExtHostFunctions = (
+	frame_benchmarking::benchmarking::HostFunctions,
+	sp_io::SubstrateHostFunctions,
+	peaq_primitives_ext::peaq_ext::HostFunctions,
+);
+#[cfg(not(feature = "runtime-benchmarks"))]
+pub type ExtHostFunctions = (
+	sp_io::SubstrateHostFunctions,
+	peaq_primitives_ext::peaq_ext::HostFunctions,
+);
+
 type FullClient<RuntimeApi> = TFullClient<
 	Block,
 	RuntimeApi,
-	WasmExecutor<(
-		sp_io::SubstrateHostFunctions,
-		frame_benchmarking::benchmarking::HostFunctions,
-		peaq_primitives_ext::peaq_ext::HostFunctions,
-	)>,
+	WasmExecutor<ExtHostFunctions>,
 >;
 type FullBackend = TFullBackend<Block>;
 
