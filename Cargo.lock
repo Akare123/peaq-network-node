@@ -9267,7 +9267,7 @@ dependencies = [
 [[package]]
 name = "peaq-pallet-transaction"
 version = "0.1.1"
-source = "git+https://github.com/peaqnetwork/peaq-pallet-transaction.git?branch=dev#818fa83f86a98b9fc820f933562deeb767b5c7f9"
+source = "git+https://github.com/peaqnetwork/peaq-pallet-transaction.git?branch=dev#d0772b7e8ed4776e8f73601b2fab5f08e23fd391"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
